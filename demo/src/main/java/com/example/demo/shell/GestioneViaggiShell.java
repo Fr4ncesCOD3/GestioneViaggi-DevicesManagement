@@ -1,28 +1,41 @@
+// Questo è il package che contiene la classe
 package com.example.demo.shell;
 
+// Importiamo tutte le classi necessarie
+// Le classi del nostro modello (Viaggio, Dipendente, ecc.)
 import com.example.demo.model.*;
+// Le interfacce repository per accedere al database
 import com.example.demo.repository.*;
+// Le annotazioni e classi di Spring Shell per creare comandi da terminale
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.shell.standard.ShellCommandGroup;
+// Classi per personalizzare l'aspetto del prompt
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 import org.springframework.shell.jline.PromptProvider;
+// Annotazione di Spring per definire un componente
 import org.springframework.stereotype.Component;
+// Classi per la validazione dei dati
 import com.example.demo.validation.DataValidator;
 import com.example.demo.validation.ValidationException;
+// Classi per controllare la disponibilità dei comandi
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.Availability;
+// Classi per gestire date e liste
 import java.time.LocalDate;
 import java.util.List;
 import java.time.format.DateTimeParseException;
 
+// Indica che questa classe è un componente Shell che gestisce i comandi
 @ShellComponent
+// Raggruppa tutti i comandi sotto la categoria "Gestione Viaggi Aziendali"
 @ShellCommandGroup("Gestione Viaggi Aziendali")
 public class GestioneViaggiShell {
 
+    // Iniettiamo automaticamente le dipendenze dei repository
     @Autowired
     private ViaggioRepository viaggioRepository;
     
@@ -32,14 +45,18 @@ public class GestioneViaggiShell {
     @Autowired
     private PrenotazioneRepository prenotazioneRepository;
 
+    // Flag per controllare se il programma è stato inizializzato
     private boolean isInitialized = false;
 
+    // Metodo per inizializzare il programma
     @ShellMethod(key = "inizia", value = "Inizia a utilizzare il programma")
     public String inizia() {
         isInitialized = true;
         return mostraMenu();
     }
 
+    // Controlla se i comandi sono disponibili
+    // I comandi saranno disponibili solo dopo aver eseguito il comando "inizia"
     @ShellMethodAvailability({"menu", "lista-viaggi", "nuovo-viaggio", "completa-viaggio", 
                              "lista-dipendenti", "nuovo-dipendente", "prenota", "lista-prenotazioni"})
     public Availability checkAvailability() {
@@ -48,6 +65,7 @@ public class GestioneViaggiShell {
             : Availability.unavailable("Esegui prima il comando 'inizia' per utilizzare il programma");
     }
 
+    // Mostra il menu principale con tutti i comandi disponibili
     @ShellMethod(key = "menu", value = "Mostra il menu principale")
     public String mostraMenu() {
         StringBuilder menu = new StringBuilder();
@@ -70,13 +88,16 @@ public class GestioneViaggiShell {
         return menu.toString();
     }
 
+    // Mostra l'elenco di tutti i viaggi nel database
     @ShellMethod(key = "lista-viaggi", value = "Mostra tutti i viaggi")
     public String listaViaggi() {
+        // Recupera tutti i viaggi dal database
         List<Viaggio> viaggi = viaggioRepository.findAll();
         if (viaggi.isEmpty()) {
             return "Nessun viaggio trovato.\nUsa 'nuovo-viaggio' per crearne uno.";
         }
         
+        // Formatta l'output per mostrare i dettagli di ogni viaggio
         StringBuilder result = new StringBuilder("=== ELENCO VIAGGI ===\n\n");
         for (Viaggio v : viaggi) {
             result.append(String.format("ID: %d\nDestinazione: %s\nData: %s\nStato: %s\n-------------------\n", 
@@ -85,19 +106,24 @@ public class GestioneViaggiShell {
         return result.toString();
     }
 
+    // Crea un nuovo viaggio
     @ShellMethod(key = "nuovo-viaggio", value = "Crea un nuovo viaggio")
     public String nuovoViaggio(
             @ShellOption(help = "Destinazione del viaggio") String destinazione,
             @ShellOption(help = "Data del viaggio (formato: YYYY-MM-DD)") String data) {
         try {
+            // Converte la stringa della data in un oggetto LocalDate
             LocalDate dataViaggio = LocalDate.parse(data);
+            // Valida i dati inseriti
             DataValidator.validateViaggio(destinazione, dataViaggio);
 
+            // Crea un nuovo oggetto Viaggio
             Viaggio viaggio = new Viaggio();
             viaggio.setDestinazione(destinazione);
             viaggio.setData(dataViaggio);
             viaggio.setStato(StatoViaggio.IN_PROGRAMMA);
             
+            // Salva il viaggio nel database
             viaggio = viaggioRepository.save(viaggio);
             return formatSuccessMessage("Viaggio creato con successo!", 
                 String.format("ID: %d\nDestinazione: %s\nData: %s", 
@@ -111,6 +137,7 @@ public class GestioneViaggiShell {
         }
     }
 
+    // Mostra l'elenco di tutte le prenotazioni
     @ShellMethod(key = "lista-prenotazioni", value = "Mostra tutte le prenotazioni")
     public String listaPrenotazioni() {
         List<Prenotazione> prenotazioni = prenotazioneRepository.findAll();
@@ -134,6 +161,7 @@ public class GestioneViaggiShell {
         return result.toString();
     }
 
+    // Registra un nuovo dipendente
     @ShellMethod(key = "nuovo-dipendente", value = "Registra un nuovo dipendente")
     public String nuovoDipendente(
             @ShellOption(help = "Username del dipendente") String username,
@@ -141,12 +169,14 @@ public class GestioneViaggiShell {
             @ShellOption(help = "Cognome del dipendente") String cognome,
             @ShellOption(help = "Email del dipendente") String email) {
         try {
+            // Crea un nuovo oggetto Dipendente
             Dipendente dipendente = new Dipendente();
             dipendente.setUsername(username);
             dipendente.setNome(nome);
             dipendente.setCognome(cognome);
             dipendente.setEmail(email);
             
+            // Salva il dipendente nel database
             dipendente = dipendenteRepository.save(dipendente);
             return String.format("✓ Dipendente registrato con successo!\nID: %d\nNome: %s %s\nEmail: %s", 
                 dipendente.getId(), dipendente.getNome(), dipendente.getCognome(), dipendente.getEmail());
@@ -155,6 +185,7 @@ public class GestioneViaggiShell {
         }
     }
 
+    // Mostra l'elenco di tutti i dipendenti
     @ShellMethod(key = "lista-dipendenti", value = "Mostra tutti i dipendenti")
     public String listaDipendenti() {
         List<Dipendente> dipendenti = dipendenteRepository.findAll();
@@ -171,18 +202,22 @@ public class GestioneViaggiShell {
         return result.toString();
     }
 
+    // Crea una nuova prenotazione per un viaggio
     @ShellMethod(key = "prenota", value = "Crea una prenotazione viaggio")
     public String prenotaViaggio(
             @ShellOption(help = "ID del viaggio") Long idViaggio,
             @ShellOption(help = "ID del dipendente") Long idDipendente,
             @ShellOption(help = "Note o preferenze (opzionale)", defaultValue = "") String note) {
         try {
+            // Cerca il viaggio nel database
             Viaggio viaggio = viaggioRepository.findById(idViaggio)
                 .orElseThrow(() -> new RuntimeException("Viaggio non trovato"));
                 
+            // Cerca il dipendente nel database
             Dipendente dipendente = dipendenteRepository.findById(idDipendente)
                 .orElseThrow(() -> new RuntimeException("Dipendente non trovato"));
                 
+            // Controlla se il dipendente ha già una prenotazione per questa data
             List<Prenotazione> prenotazioniEsistenti = 
                 prenotazioneRepository.findByDipendenteAndDataRichiesta(dipendente, viaggio.getData());
                 
@@ -190,12 +225,14 @@ public class GestioneViaggiShell {
                 return "✗ Il dipendente ha già una prenotazione per questa data";
             }
 
+            // Crea una nuova prenotazione
             Prenotazione prenotazione = new Prenotazione();
             prenotazione.setViaggio(viaggio);
             prenotazione.setDipendente(dipendente);
             prenotazione.setDataRichiesta(viaggio.getData());
             prenotazione.setNote(note);
             
+            // Salva la prenotazione nel database
             prenotazione = prenotazioneRepository.save(prenotazione);
             return String.format("✓ Prenotazione creata con successo!\nID: %d\nDipendente: %s %s\nViaggio: %s (%s)", 
                 prenotazione.getId(), 
@@ -208,12 +245,15 @@ public class GestioneViaggiShell {
         }
     }
 
+    // Segna un viaggio come completato
     @ShellMethod(key = "completa-viaggio", value = "Segna un viaggio come completato")
     public String completaViaggio(@ShellOption(help = "ID del viaggio") Long idViaggio) {
         try {
+            // Cerca il viaggio nel database
             Viaggio viaggio = viaggioRepository.findById(idViaggio)
                 .orElseThrow(() -> new RuntimeException("Viaggio non trovato"));
                 
+            // Aggiorna lo stato del viaggio a COMPLETATO
             viaggio.setStato(StatoViaggio.COMPLETATO);
             viaggioRepository.save(viaggio);
             return String.format("✓ Viaggio %d (%s) segnato come completato", 
@@ -223,6 +263,9 @@ public class GestioneViaggiShell {
         }
     }
 
+    // Metodi di utilità per formattare i messaggi
+
+    // Formatta un messaggio di successo
     private String formatSuccessMessage(String title, String content) {
         return String.format("""
             ✅ %s
@@ -232,6 +275,7 @@ public class GestioneViaggiShell {
             """, title, content);
     }
 
+    // Formatta un messaggio di errore
     private String formatErrorMessage(String title, String content) {
         return String.format("""
             ❌ %s
@@ -241,6 +285,7 @@ public class GestioneViaggiShell {
             """, title, content);
     }
 
+    // Formatta l'intestazione di una lista
     private String formatListHeader(String title) {
         return String.format("""
             ╔════════════════════════════════════╗
@@ -249,12 +294,14 @@ public class GestioneViaggiShell {
             """, centerText(title, 36));
     }
 
+    // Centra il testo in uno spazio definito
     private String centerText(String text, int width) {
         int padding = (width - text.length()) / 2;
         return " ".repeat(padding) + text + " ".repeat(width - text.length() - padding);
     }
 }
 
+// Classe per personalizzare il prompt della shell
 @Component
 class CustomPromptProvider implements PromptProvider {
     @Override
