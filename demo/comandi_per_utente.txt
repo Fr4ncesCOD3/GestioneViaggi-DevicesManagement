@@ -1,0 +1,86 @@
+=== GUIDA RAPIDA GESTIONE VIAGGI AZIENDALI ===
+
+1. AVVIO DEL PROGRAMMA
+----------------------
+gestione-viaggi:> inizia
+// Questo comando è necessario per iniziare a utilizzare il programma
+
+2. VISUALIZZARE IL MENU
+----------------------
+gestione-viaggi:> menu
+// Mostra tutte le opzioni disponibili con relative descrizioni
+
+3. GESTIONE DIPENDENTI
+----------------------
+// Registrare un nuovo dipendente
+gestione-viaggi:> nuovo-dipendente --username mario.rossi --nome Mario --cognome Rossi --email mario.rossi@azienda.com
+
+// Visualizzare tutti i dipendenti
+gestione-viaggi:> lista-dipendenti
+
+4. GESTIONE VIAGGI
+----------------------
+// Creare un nuovo viaggio
+gestione-viaggi:> nuovo-viaggio --destinazione "Milano" --data 2024-04-01
+
+// Visualizzare tutti i viaggi
+gestione-viaggi:> lista-viaggi
+
+// Segnare un viaggio come completato
+gestione-viaggi:> completa-viaggio --id-viaggio 1
+
+5. GESTIONE PRENOTAZIONI
+----------------------
+// Creare una prenotazione
+gestione-viaggi:> prenota --id-viaggio 1 --id-dipendente 1 --note "Preferenza hotel vicino alla stazione"
+
+// Visualizzare tutte le prenotazioni
+gestione-viaggi:> lista-prenotazioni
+
+6. AIUTO E INFORMAZIONI
+----------------------
+// Per ottenere aiuto su un comando specifico
+gestione-viaggi:> help nome-comando
+// Esempio: gestione-viaggi:> help nuovo-viaggio
+
+7. USCITA DAL PROGRAMMA
+----------------------
+gestione-viaggi:> exit
+
+NOTE IMPORTANTI:
+---------------
+- Prima di utilizzare qualsiasi comando, eseguire sempre 'inizia'
+- Le date devono essere nel formato YYYY-MM-DD
+- Username può contenere solo lettere, numeri, . _ -
+- Non è possibile prenotare più viaggi per lo stesso dipendente nella stessa data
+- I viaggi non possono essere programmati nel passato
+- Per le prenotazioni, annotare gli ID di viaggio e dipendente dalla lista corrispondente
+
+ESEMPI DI UTILIZZO COMPLETO:
+---------------------------
+1. Registrare un nuovo dipendente:
+   gestione-viaggi:> nuovo-dipendente --username john.doe --nome John --cognome Doe --email john.doe@azienda.com
+
+2. Creare un nuovo viaggio:
+   gestione-viaggi:> nuovo-viaggio --destinazione "Roma" --data 2024-05-15
+
+3. Verificare gli ID:
+   gestione-viaggi:> lista-dipendenti
+   gestione-viaggi:> lista-viaggi
+
+4. Creare una prenotazione:
+   gestione-viaggi:> prenota --id-viaggio 1 --id-dipendente 1 --note "Richiesta camera singola"
+
+5. Verificare la prenotazione:
+   gestione-viaggi:> lista-prenotazioni
+
+6. Completare il viaggio:
+   gestione-viaggi:> completa-viaggio --id-viaggio 1
+
+MESSAGGI DI ERRORE COMUNI:
+-------------------------
+❌ "Username non valido" - Usare solo lettere, numeri, . _ - (3-20 caratteri)
+❌ "Email non valida" - Usare un formato email valido
+❌ "Data non valida" - Usare il formato YYYY-MM-DD
+❌ "La data non può essere nel passato" - Usare una data futura
+❌ "Il dipendente ha già una prenotazione per questa data" - Scegliere una data diversa

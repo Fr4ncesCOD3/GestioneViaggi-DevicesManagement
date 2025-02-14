@@ -32,20 +32,25 @@ public class ViaggioController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Viaggio> updateViaggio(@PathVariable Long id, @RequestBody Viaggio viaggio) {
-        if (!viaggioRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        viaggio.setId(id);
-        return ResponseEntity.ok(viaggioRepository.save(viaggio));
+    public ResponseEntity<Viaggio> updateViaggio(@PathVariable Long id, @RequestBody Viaggio viaggioDetails) {
+        return viaggioRepository.findById(id)
+                .map(viaggio -> {
+                    viaggio.setDestinazione(viaggioDetails.getDestinazione());
+                    viaggio.setData(viaggioDetails.getData());
+                    viaggio.setStato(viaggioDetails.getStato());
+                    Viaggio updatedViaggio = viaggioRepository.save(viaggio);
+                    return ResponseEntity.ok(updatedViaggio);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteViaggio(@PathVariable Long id) {
-        if (!viaggioRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        viaggioRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        return viaggioRepository.findById(id)
+                .map(viaggio -> {
+                    viaggioRepository.delete(viaggio);
+                    return ResponseEntity.ok().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 } 
