@@ -5,6 +5,7 @@ package com.example.demo.repository;
 import com.example.demo.model.Dipendente;
 // Importiamo l'interfaccia JpaRepository di Spring Data JPA che fornisce metodi CRUD predefiniti
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
 // Questa è l'interfaccia repository per gestire le operazioni sul database per l'entità Dipendente
 // Estende JpaRepository che fornisce metodi come save(), findAll(), findById(), delete() ecc.
@@ -12,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 // - Dipendente: il tipo dell'entità da gestire
 // - Long: il tipo dell'ID dell'entità
 public interface DipendenteRepository extends JpaRepository<Dipendente, Long> {
+    Optional<Dipendente> findByEmail(String email);
 } 

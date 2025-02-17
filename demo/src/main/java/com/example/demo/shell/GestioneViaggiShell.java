@@ -3,31 +3,32 @@ package com.example.demo.shell;
 
 // Importiamo tutte le classi necessarie
 // Le classi del nostro modello (Viaggio, Dipendente, ecc.)
-import com.example.demo.model.*;
-// Le interfacce repository per accedere al database
-import com.example.demo.repository.*;
-// Le annotazioni e classi di Spring Shell per creare comandi da terminale
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.standard.ShellComponent;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
-import org.springframework.shell.standard.ShellCommandGroup;
-// Classi per personalizzare l'aspetto del prompt
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.shell.Availability;
 import org.springframework.shell.jline.PromptProvider;
-// Annotazione di Spring per definire un componente
+import org.springframework.shell.standard.ShellCommandGroup;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
+import org.springframework.shell.standard.ShellOption;
 import org.springframework.stereotype.Component;
-// Classi per la validazione dei dati
+
+import com.example.demo.model.Dipendente;
+import com.example.demo.model.Prenotazione;
+import com.example.demo.model.StatoViaggio;
+import com.example.demo.model.Viaggio;
+import com.example.demo.repository.DipendenteRepository;
+import com.example.demo.repository.PrenotazioneRepository;
+import com.example.demo.repository.ViaggioRepository;
 import com.example.demo.validation.DataValidator;
 import com.example.demo.validation.ValidationException;
-// Classi per controllare la disponibilità dei comandi
-import org.springframework.shell.standard.ShellMethodAvailability;
-import org.springframework.shell.Availability;
-// Classi per gestire date e liste
-import java.time.LocalDate;
-import java.util.List;
-import java.time.format.DateTimeParseException;
 
 // Indica che questa classe è un componente Shell che gestisce i comandi
 @ShellComponent
@@ -44,6 +45,9 @@ public class GestioneViaggiShell {
     
     @Autowired
     private PrenotazioneRepository prenotazioneRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Flag per controllare se il programma è stato inizializzato
     private boolean isInitialized = false;
@@ -167,7 +171,8 @@ public class GestioneViaggiShell {
             @ShellOption(help = "Username del dipendente") String username,
             @ShellOption(help = "Nome del dipendente") String nome,
             @ShellOption(help = "Cognome del dipendente") String cognome,
-            @ShellOption(help = "Email del dipendente") String email) {
+            @ShellOption(help = "Email del dipendente") String email,
+            @ShellOption(help = "Password del dipendente") String password) {
         try {
             // Crea un nuovo oggetto Dipendente
             Dipendente dipendente = new Dipendente();
@@ -175,6 +180,8 @@ public class GestioneViaggiShell {
             dipendente.setNome(nome);
             dipendente.setCognome(cognome);
             dipendente.setEmail(email);
+            // Codifica la password prima di salvarla
+            dipendente.setPassword(passwordEncoder.encode(password));
             
             // Salva il dipendente nel database
             dipendente = dipendenteRepository.save(dipendente);

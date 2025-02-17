@@ -6,3 +6,25 @@
 1739544497589:nuovo-dipendente --username giaco.bazzi --nome giaco --cognome bazzi --email giacobazzi@azienda.com
 1739544740535:inizia
 1739544806614:exit
+1739805020822:inizia
+1739805036526:nuovo-dipendente
+1739805059153:lista-dipendenti
+1739805159341:inizia
+1739805169235:lista-dipendenti
+1739805198093:nuovo-dipendente --username johndoe --nome John --cognome Doe --email john@example.com --password mypassword
+1739805257708:inizia
+1739805259453:gestione-viaggi:> nuovo-dipendente --username johndoe --nome John --cognome Doe --email john@example.com --password mypassword
+1739805259459:Hibernate:
+1739805259473:2025-02-17T16:13:18.223+01:00  WARN 26692 --- [gestione-viaggi] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 42703
+1739805259479:2025-02-17T16:13:18.224+01:00 ERROR 26692 --- [gestione-viaggi] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : ERRORE: la colonna "password" della relazione "dipendente" non esiste
+1739805259487:✗ Errore nella registrazione del dipendente: could not execute statement [ERRORE: la colonna "password" della relazione "dipendente" non esiste
+1739805284684:gestione-viaggi:> nuovo-dipendente --username johndoe --nome John --cognome Doe --email john@example.com --password mypassword
+1739805290311:inizia
+1739805293030:nuovo-dipendente --username johndoe --nome John --cognome Doe --email john@example.com --password mypassword
+1739805431519:inizia
+1739805457238:nuovo-viaggio --destinazione "Milano" --data 2024-04-01
+1739805475719:nuovo-viaggio --destinazione "Milano" --data 2024-05-03
+1739805483753:nuovo-viaggio --destinazione "Milano" --data 2025-04-01
+1739805512957:completa-viaggio --id-viaggio 1
+1739805528471:prenota --id-viaggio 1 --id-dipendente 1 --note "Preferenza hotel vicino alla stazione"
+1739805557229:nuovo-viaggio --destinazione "Roma" --data 2025-05-15
